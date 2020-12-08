@@ -169,6 +169,10 @@ public class HashSet<E>
      * @return an Iterator over the elements in this set
      * @see ConcurrentModificationException
      */
+
+    /*
+    test
+     */
     public Iterator<E> iterator() {
         return map.keySet().iterator();
     }
