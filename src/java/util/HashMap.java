@@ -678,21 +678,21 @@ public class hashmap<K,V> extends AbstractMap<K,V>
      */
     final Node<K,V>[] resize() {
         Node<K,V>[] oldTab = table;
-        int oldCap = (oldTab == null) ? 0 : oldTab.length;
-        int oldThr = threshold;
+        int oldCap = (oldTab == null) ? 0 : oldTab.length;//
+        int oldThr = threshold;//The next size value at which to resize--threshold表示要调整大小的下一个值(临界值)
         int newCap, newThr = 0;
         if (oldCap > 0) {
-            if (oldCap >= MAXIMUM_CAPACITY) {
+            if (oldCap >= MAXIMUM_CAPACITY) {//旧表容量大于容量最大值，不再扩容
                 threshold = Integer.MAX_VALUE;
                 return oldTab;
             }
             else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
                      oldCap >= DEFAULT_INITIAL_CAPACITY)
-                newThr = oldThr << 1; // double threshold
+                newThr = oldThr << 1; // double threshold 两倍扩容
         }
-        else if (oldThr > 0) // initial capacity was placed in threshold
-            newCap = oldThr;
-        else {               // zero initial threshold signifies using defaults
+        else if (oldThr > 0) // initial capacity was placed in threshold --oldCap=0 && oldThr>0
+            newCap = oldThr;//初始化新表newCap
+        else {               // zero initial threshold signifies using defaults--oldCap=0 && oldThr=0 初始化newCap/newThr
             newCap = DEFAULT_INITIAL_CAPACITY;
             newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
         }
@@ -710,24 +710,24 @@ public class hashmap<K,V> extends AbstractMap<K,V>
                 Node<K,V> e;
                 if ((e = oldTab[j]) != null) {
                     oldTab[j] = null;
-                    if (e.next == null)
+                    if (e.next == null) //只有一个元素,直接放入新表的目标位置
                         newTab[e.hash & (newCap - 1)] = e;
-                    else if (e instanceof TreeNode)
-                        ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                    else if (e instanceof TreeNode) //e是一个treeNode
+                        ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);//拆分树
                     else { // preserve order
                         Node<K,V> loHead = null, loTail = null;
                         Node<K,V> hiHead = null, hiTail = null;
                         Node<K,V> next;
                         do {
                             next = e.next;
-                            if ((e.hash & oldCap) == 0) {
+                            if ((e.hash & oldCap) == 0) {//true，该节点在新表的下标位置与table一致都为j,放入lo链表
                                 if (loTail == null)
                                     loHead = e;
                                 else
                                     loTail.next = e;
                                 loTail = e;
                             }
-                            else {
+                            else {// 该节点在新表的位置为j+oldCap,放入hi链表
                                 if (hiTail == null)
                                     hiHead = e;
                                 else
@@ -735,11 +735,11 @@ public class hashmap<K,V> extends AbstractMap<K,V>
                                 hiTail = e;
                             }
                         } while ((e = next) != null);
-                        if (loTail != null) {
+                        if (loTail != null) {//如果lo链表为空，则把整个lo链表放到新table的j位
                             loTail.next = null;
                             newTab[j] = loHead;
                         }
-                        if (hiTail != null) {
+                        if (hiTail != null) {//如果lo链表非空，则把整个hi链表放到新table的j+oldCap位
                             hiTail.next = null;
                             newTab[j + oldCap] = hiHead;
                         }
